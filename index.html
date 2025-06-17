@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEIMS_INTERNATIONAL- Labor Management System</title>
+    <style>
+        :root {
+            --primary-cyan: #00ffff;
+            --primary-orange: #ff6600;
+            --dark-bg: #0a0a0a;
+            --card-bg: #111111;
+            --border-color: #333333;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --success: #00ff41;
+            --danger: #ff073a;
+            --warning: #ffaa00;
+            --grid-size: 1px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Tron Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) var(--grid-size), transparent var(--grid-size)),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) var(--grid-size), transparent var(--grid-size));
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            background: transparent;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 102, 0, 0.1));
+            border-bottom: 2px solid var(--primary-cyan);
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-cyan), transparent);
+            animation: scan 2s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px var(--primary-cyan);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            opacity: 0.8;
+            color: var(--text-secondary);
+        }
+
+        /* Login Section */
+        .login-section {
+            padding: 2rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 120px);
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(17, 17, 17, 0.9);
+            border: 1px solid var(--primary-cyan);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
+            position: relative;
+        }
+
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(45deg, var(--primary-cyan), var(--primary-orange), var(--primary-cyan));
+            border-radius: 10px;
+            z-index: -1;
+            animation: borderGlow 2s infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            0% { filter: blur(0px); }
+            100% { filter: blur(2px); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.1));
+            border: 1px solid var(--primary-cyan);
+            color: var(--primary-cyan);
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: linear-gradient(135deg, rgba(255, 7, 58, 0.2), rgba(255, 7, 58, 0.1));
+        }
+
+        .btn-success {
+            border-color: var(--success);
+            color: var(--success);
+            background: linear-gradient(135deg, rgba(0, 255, 65, 0.2), rgba(0, 255, 65, 0.1));
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .user-header h2 {
+            color: var(--primary-cyan);
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: rgba(17, 17, 17, 0.5);
+            padding: 0.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            border: 1px solid transparent;
+        }
+
+        .tab:hover {
+            border-color: var(--primary-cyan);
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .tab.active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: var(--primary-cyan);
+            color: var(--primary-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(17, 17, 17, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-orange), var(--primary-cyan));
+        }
+
+        .card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: 1.5rem;
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Worker Grid */
+        .worker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .worker-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .worker-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .worker-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-cyan);
+            transition: left 0.3s ease;
+        }
+
+        .worker-card:hover::before {
+            left: 100%;
+        }
+
+        .worker-card:hover {
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .worker-card.present {
+            border-color: var(--success);
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        .worker-card.absent {
+            border-color: var(--danger);
+            background: rgba(255, 7, 58, 0.1);
+        }
+
+        .status-present, .status-absent {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .status-present {
+            background: rgba(0, 255, 65, 0.3);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-absent {
+            background: rgba(255, 7, 58, 0.3);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .table th, .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .table th {
+            background: rgba(0, 255, 255, 0.1);
+            font-weight: 600;
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        /* Dashboard Stats */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-value {
+            color: var(--primary-cyan);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(255, 7, 58, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem 0.5rem;
+            }
+            
+            .login-section {
+                padding: 1rem;
+            }
+            
+            .login-form {
+                padding: 1.5rem;
+            }
+            
+            .main-content {
+                padding: 0.5rem;
+            }
+            
+            .card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .user-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            
+            .tabs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .table th, .table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .worker-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            border-top-color: var(--primary-cyan);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-cyan);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-orange);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ HEIMS NEXUS ⚡</h1>
+            <p>Advanced Labor Management System</p>
+        </div>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <div class="login-form">
+                <h2 style="margin-bottom: 2rem; color: var(--primary-cyan); text-align: center; text-transform: uppercase; letter-spacing: 2px;">System Access</h2>
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter password">
+                </div>
+                <div class="form-group">
+                    <label for="role">Access Level:</label>
+                    <select id="role">
+                        <option value="admin">Administrator</option>
+                        <option value="supervisor">Supervisor</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="login()" style="width: 100%;">Initialize Connection</button>
+                <div id="loginAlert"></div>
+                <div style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-secondary); text-align: center;">
+                    Demo: admin/admin123 or supervisor/super123
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content">
+            <div class="user-header">
+                <h2>Welcome, <span id="userRole"></span></h2>
+                <button class="btn btn-danger" onclick="logout()">Disconnect</button>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('attendance')">Attendance</div>
+                <div class="tab" onclick="showTab('workers')">Workers</div>
+                <div class="tab" onclick="showTab('salary')">Salary</div>
+                <div class="tab" onclick="showTab('reports')">Reports</div>
+            </div>
+
+            <!-- Attendance Tab -->
+            <div id="attendanceTab" class="tab-content active">
+                <div class="card">
+                    <h3>Daily Attendance - <span id="currentDate"></span></h3>
+                    <div class="worker-grid" id="attendanceGrid">
+                        <!-- Workers will be loaded here -->
+                    </div>
+                    <button class="btn btn-success" onclick="saveAttendance()" style="margin-top: 1.5rem; width: 100%;">Save Attendance Data</button>
+                </div>
+            </div>
+
+            <!-- Workers Tab -->
+            <div id="workersTab" class="tab-content">
+                <div class="card">
+                    <h3>Add New Worker</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Worker Name:</label>
+                            <input type="text" id="workerName" placeholder="Enter worker name">
+                        </div>
+                        <div class="form-group">
+                            <label>Daily Rate (₹):</label>
+                            <input type="number" id="dailyRate" placeholder="Enter daily rate">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number:</label>
+                            <input type="tel" id="phoneNumber" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label>Role:</label>
+                            <select id="workerRole">
+                                <option value="laborer">Laborer</option>
+                                <option value="mason">Mason</option>
+                                <option value="electrician">Electrician</option>
+                                <option value="plumber">Plumber</option>
+                                <option value="supervisor">Supervisor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="addWorker()" style="width: 100%;">Add Worker</button>
+                </div>
+
+                <div class="card">
+                    <h3>Worker Database</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Rate</th>
+                                    <th>Phone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workersTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Tab -->
+            <div id="salaryTab" class="tab-content">
+                <div class="card">
+                    <h3>Monthly Salary Report</h3>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label>Select Month:</label>
+                            <input type="month" id="salaryMonth">
+                        </div>
+                        <button class="btn" onclick="generateSalaryReport()" style="align-self: end;">Generate Report</button>
+                    </div>
+                    <div id="salaryReport"></div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reportsTab" class="tab-content">
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>⚡ System Stats</h3>
+                        <div id="quickStats">
+                            <div class="stat-item">
+                                <strong>Total Workers:</strong>
+                                <span class="stat-value" id="totalWorkers">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Present Today:</strong>
+                                <span class="stat-value" id="presentToday">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Absent Today:</strong>
+                                <span class="stat-value" id="absentToday">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Attendance Rate:</strong>
+                                <span class="stat-value" id="attendanceRate">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>📊 Recent Activity</h3>
+                        <div id="recentAttendance">
+                            <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                                Activity data will appear here...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Application State Management
+        class LaborManagementSystem {
+            constructor() {
+                this.workers = [
+                    { id: 1, name: "Raj Kumar", role: "mason", dailyRate: 800, phone: "9876543210" },
+                    { id: 2, name: "Suresh Singh", role: "laborer", dailyRate: 600, phone: "9876543211" },
+                    { id: 3, name: "Amit Sharma", role: "electrician", dailyRate: 1000, phone: "9876543212" },
+                    { id: 4, name: "Vijay Gupta", role: "plumber", dailyRate: 900, phone: "9876543213" },
+                    { id: 5, name: "Ravi Verma", role: "laborer", dailyRate: 600, phone: "9876543214" }
+                ];
+                this.attendance = {};
+                this.currentUser = null;
+                this.workerIdCounter = 6;
+                this.init();
+            }
+
+            init() {
+                document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+                document.getElementById('salaryMonth').value = new Date().toISOString().substr(0, 7);
+                this.loadAttendanceGrid();
+                this.loadWorkersTable();
+                this.updateQuickStats();
+            }
+
+            login() {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                const role = document.getElementById('role').value;
+                const alertDiv = document.getElementById('loginAlert');
+
+                if (!username || !password) {
+                    this.showAlert(alertDiv, 'Please fill all fields!', 'error');
+                    return;
+                }
+
+                // Authentication logic
+                const validCredentials = 
+                    (username === 'admin' && password === 'admin123') || 
+                    (username === 'supervisor' && password === 'super123');
+
+                if (validCredentials) {
+                    this.currentUser = { username, role };
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    document.getElementById('userRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+                    
+                    // Role-based access control
+                    if (role === 'supervisor') {
+                        this.hideElementBySelector('[onclick="showTab(\'workers\')"]');
+                        this.hideElementBySelector('[onclick="showTab(\'salary\')"]');
+                    }
+                    
+                    this.showAlert(alertDiv, 'Connection established!', 'success');
+                    setTimeout(() => alertDiv.innerHTML = '', 3000);
+                } else {
+                    this.showAlert(alertDiv, 'Invalid credentials!', 'error');
+                }
+            }
+
+            logout() {
+                this.currentUser = null;
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                
+                // Reset tabs visibility
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.style.display = 'block';
+                });
+            }
+
+            showTab(tabName) {
+                // Hide all tab contents and remove active class
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Show selected tab and mark as active
+                document.getElementById(tabName + 'Tab').classList.add('active');
+                event.target.classList.add('active');
+
+                if (tabName === 'reports') {
+                    this.updateQuickStats();
+                }
+            }
+
+            loadAttendanceGrid() {
+                const grid = document.getElementById('attendanceGrid');
+                const today = new Date().toDateString();
+                
+                grid.innerHTML = this.workers.map(worker => `
+                    <div class="worker-card" onclick="app.toggleAttendance(${worker.id})" id="worker-${worker.id}">
+                        <strong>${worker.name}</strong><br>
+                        <small style="color: var(--text-secondary); text-transform: uppercase;">${worker.role}</small><br><br>
+                        <span class="status" id="status-${worker.id}">
+                            ${this.attendance[today]?.([worker.id]) ? 
+                              '<span class="status-present">Present</span>' : 
+                              '<span class="status-absent">Absent</span>'}
+                        </span>
+                    </div>
+                `).join('');
+
+                // Update card styles based on attendance
+                this.workers.forEach(worker => {
+                    const card = document.getElementById(`worker-${worker.id}`);
+                    if (this.attendance[today]?.[worker.id]) {
+                        card.classList.add('present');
+                        card.classList.remove('absent');
+                    } else {
+                        card.classList.add('absent');
+                        card.classList.remove('present');
+                    }
+                });
+            }
+
+            toggleAttendance(workerId) {
+                const today = new Date().toDateString();
+                
+                if (!this.attendance[today]) {
+                    this.attendance[today] = {};
+                }
+                
+                this.attendance[today][workerId] = !this.attendance[today][workerId];
+                this.loadAttendanceGrid();
+            }
+
+            saveAttendance() {
+                const today = new Date().toDateString();
+                // In production, this would make an API call
+                this.showNotification(`Attendance data saved for ${today}!`, 'success');
+                this.updateQuickStats();
+            }
+
+            addWorker() {
+                const name = document.getElementById('workerName').value.trim();
+                const rate = document.getElementById('dailyRate').value;
+                const phone = document.getElementById('phoneNumber').value.trim();
+                const role = document.getElementById('workerRole').value;
+
+                if (!name || !rate || !phone) {
+                    this.showNotification('Please fill all fields!', 'error');
+                    return;
+                }
+
+                if (rate <= 0) {
+                    this.showNotification('Daily rate must be greater than 0!', 'error');
+                    return;
+                }
+
+                const newWorker = {
+                    id: this.workerIdCounter++,
+                    name: name,
+                    role: role,
+                    dailyRate: parseInt(rate),
+                    phone: phone
+                };
+
+                this.workers.push(newWorker);
+                this.loadWorkersTable();
+                this.loadAttendanceGrid();
+                
+                // Clear form
+                this.clearWorkerForm();
+                
+                this.showNotification('Worker added successfully!', 'success');
+            }
+
+            clearWorkerForm() {
+                document.getElementById('workerName').value = '';
+                document.getElementById('dailyRate').value = '';
+                document.getElementById('phoneNumber').value = '';
+                document.getElementById('workerRole').value = 'laborer';
+            }
+
+            loadWorkersTable() {
+                const table = document.getElementById('workersTable');
+                table.innerHTML = this.workers.map(worker => `
+                    <tr>
+                        <td>${worker.name}</td>
+                        <td style="text-transform: uppercase;">${worker.role}</td>
+                        <td>₹${worker.dailyRate.toLocaleString()}</td>
+                        <td>${worker.phone}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="app.removeWorker(${worker.id})" 
+                                    style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">
+                                Remove
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            removeWorker(workerId) {
+                if (confirm('Are you sure you want to remove this worker?')) {
+                    this.workers = this.workers.filter(w => w.id !== workerId);
+                    this.loadWorkersTable();
+                    this.loadAttendanceGrid();
+                    this.showNotification('Worker removed successfully!', 'success');
+                }
+            }
+
+            generateSalaryReport() {
+                const month = document.getElementById('salaryMonth').value;
+                const reportDiv = document.getElementById('salaryReport');
+                
+                if (!month) {
+                    this.showNotification('Please select a month!', 'error');
+                    return;
+                }
+
+                const monthName = new Date(month + '-01').toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long' 
+                });
+                
+                let reportHTML = `
+                    <h4 style="color: var(--primary-cyan); margin-bottom: 1rem;">
+                        Salary Report for ${monthName}
+                    </h4>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Worker Name</th>
+                                    <th>Role</th>
+                                    <th>Daily Rate</th>
+                                    <th>Days Present</th>
+                                    <th>Total Salary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                let totalSalary = 0;
+                this.workers.forEach(worker => {
+                    // Mock calculation - in production, this would query actual attendance data
+                    const daysPresent = Math.floor(Math.random() * 25) + 5;
+                    const salary = worker.dailyRate * daysPresent;
+                    totalSalary += salary;
+
+                    reportHTML += `
+                        <tr>
+                            <td>${worker.name}</td>
+                            <td style="text-transform: uppercase;">${worker.role}</td>
+                            <td>₹${worker.dailyRate.toLocaleString()}</td>
+                            <td>${daysPresent}</td>
+                            <td style="color: var(--success); font-weight: 600;">₹${salary.toLocaleString()}</td>
+                        </tr>
+                    `;
+                });
+
+                reportHTML += `
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: bold; background: rgba(0, 255, 255, 0.1);">
+                                <td colspan="4" style="color: var(--primary-cyan);">
+                                    Total Salary for ${monthName}
+                                </td>
+                                <td style="color: var(--success); font-size: 1.1rem;">
+                                    ₹${totalSalary.toLocaleString()}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    </div>
+                `;
+
+                reportDiv.innerHTML = reportHTML;
+            }
+
+            updateQuickStats() {
+                const today = new Date().toDateString();
+                const totalWorkers = this.workers.length;
+                const presentToday = this.attendance[today] ? 
+                    Object.values(this.attendance[today]).filter(Boolean).length : 0;
+                const absentToday = totalWorkers - presentToday;
+                const attendanceRate = totalWorkers > 0 ? 
+                    Math.round((presentToday / totalWorkers) * 100) : 0;
+
+                document.getElementById('totalWorkers').textContent = totalWorkers;
+                document.getElementById('presentToday').textContent = presentToday;
+                document.getElementById('absentToday').textContent = absentToday;
+                document.getElementById('attendanceRate').textContent = attendanceRate + '%';
+
+                // Update recent attendance
+                this.updateRecentAttendance();
+            }
+
+            updateRecentAttendance() {
+                const recentDiv = document.getElementById('recentAttendance');
+                const attendanceDates = Object.keys(this.attendance).slice(-5);
+                
+                if (attendanceDates.length === 0) {
+                    recentDiv.innerHTML = `
+                        <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                            No attendance data available yet.
+                        </p>
+                    `;
+                    return;
+                }
+
+                let recentHTML = '';
+                attendanceDates.forEach(date => {
+                    const presentCount = Object.values(this.attendance[date]).filter(Boolean).length;
+                    const totalCount = this.workers.length;
+                    const rate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0;
+                    
+                    recentHTML += `
+                        <div class="stat-item">
+                            <span>${new Date(date).toLocaleDateString()}</span>
+                            <span style="color: var(--primary-cyan);">${presentCount}/${totalCount} (${rate}%)</span>
+                        </div>
+                    `;
+                });
+
+                recentDiv.innerHTML = recentHTML;
+            }
+
+            showAlert(container, message, type) {
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+                container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+                setTimeout(() => container.innerHTML = '', 5000);
+            }
+
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `alert alert-${type === 'success' ? 'success' : 'error'}`;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 1000;
+                    min-width: 300px;
+                    max-width: 90vw;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+
+                // Add slide animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+
+                document.body.appendChild(notification);
+
+                // Remove notification after 3 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 3000);
+            }
+
+            hideElementBySelector(selector) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize application
+        const app = new LaborManagementSystem();
+
+        // Global functions for backward compatibility
+        function login() {
+            app.login();
+        }
+
+        function logout() {
+            app.logout();
+        }
+
+        function showTab(tabName) {
+            app.showTab(tabName);
+        }
+
+        function toggleAttendance(workerId) {
+            app.toggleAttendance(workerId);
+        }
+
+        function saveAttendance() {
+            app.saveAttendance();
+        }
+
+        function addWorker() {
+            app.addWorker();
+        }
+
+        function removeWorker(workerId) {
+            app.removeWorker(workerId);
+        }
+
+        function generateSalaryReport() {
+            app.generateSalaryReport();
+        }
+
+        // Enhanced mobile support
+        document.addEventListener('DOMContentLoaded', function() {
+            // Touch event handling for better mobile experience
+            let touchStartY = 0;
+            let touchEndY = 0;
+
+            document.addEventListener('touchstart', function(e) {
+                touchStartY = e.changedTouches[0].screenY;
+            });
+
+            document.addEventListener('touchend', function(e) {
+                touchEndY = e.changedTouches[0].screenY;
+                // Add swipe gestures if needed
+            });
+
+            // Prevent zoom on double tap for input fields
+            document.querySelectorAll('input, select, textarea').forEach(element => {
+                element.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    this.focus();
+                });
+            });
+
+            // Add keyboard support for accessibility
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+                    const form = e.target.closest('.login-form, .card');
+                    if (form) {
+                        const submitBtn = form.querySelector('.btn:not(.btn-danger)');
+                        if (submitBtn) {
+                            submitBtn.click();
+                        }
+                    }
+                }
+            });
+        });
+
+        // Service Worker for offline capability (basic implementation)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // In production, you would register a proper service worker
+                console.log('Service Worker support detected');
+            });
+        }
+    </script>
+</body>
+</html>
